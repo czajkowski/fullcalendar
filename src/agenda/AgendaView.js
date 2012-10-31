@@ -58,6 +58,7 @@ function AgendaView(element, calendar, viewName) {
 	t.reportDayClick = reportDayClick; // selection mousedown hack
 	t.dragStart = dragStart;
 	t.dragStop = dragStop;
+	t.cellsReady = cellsReady;
 	
 	
 	// imports
@@ -324,6 +325,16 @@ function AgendaView(element, calendar, viewName) {
 		}
 	}
 	
+	
+	function cellsReady(){
+	    var bodyCell;
+	    var date;
+	    for (var i=0; i<colCnt; i++) {
+		date = colDate(i);
+		bodyCell = dayBodyCells.eq(i);
+		t.trigger('cellReady', this, date, bodyCell);
+	    }
+	}	
 	
 	
 	function setHeight(height, dateChanged) {

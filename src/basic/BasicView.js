@@ -33,6 +33,7 @@ function BasicView(element, calendar, viewName) {
 	t.getColCnt = function() { return colCnt };
 	t.getColWidth = function() { return colWidth };
 	t.getDaySegmentContainer = function() { return daySegmentContainer };
+	t.cellsReady = cellsReady
 	
 	
 	// imports
@@ -232,6 +233,14 @@ function BasicView(element, calendar, viewName) {
 		});
 	}
 	
+	
+	function cellsReady(){
+	    bodyCells.each(function(i, _cell) {
+		var cell = $(_cell);
+		var date = indexDate(i);
+		t.trigger('cellReady', this, date, cell);		
+	    });
+	}	
 	
 	
 	function setHeight(height) {

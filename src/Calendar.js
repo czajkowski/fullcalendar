@@ -230,6 +230,11 @@ function Calendar(element, options, eventSources, resourceSources) {
 			}
 			
 			ignoreWindowResize--;
+			
+			if(options.cellReady){
+			    currentView.cellsReady();
+			}
+			
 			currentView.trigger('viewDisplay', _element);
 		}
 	}
