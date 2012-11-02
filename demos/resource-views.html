@@ -24,33 +24,12 @@
                         center: 'title',
                         right: 'resourceDay'
                     },
+		    slotMinutes : 5, 
+		    axisFormat : "HH:mm",
                     titleFormat: 'ddd, MMM dd, yyyy',
                     defaultView: 'resourceDay',
                     selectable: true,
                     selectHelper: true,
-                    select: function(start, end, allDay, event, resourceId) {
-                        var title = prompt('Event Title:');
-                        if (title) {
-                            console.log("@@ adding event " + title + ", start " + start + ", end " + end + ", allDay " + allDay + ", resource " + resourceId);
-                            calendar.fullCalendar('renderEvent',
-                            {
-                                title: title,
-                                start: start,
-                                end: end,
-                                allDay: allDay,
-                                resourceId: resourceId
-                            },
-                            true // make the event "stick"
-                        );
-                        }
-                        calendar.fullCalendar('unselect');
-                    },
-                    eventResize: function(event, dayDelta, minuteDelta) {
-                        console.log("@@ resize event " + event.title + ", start " + event.start + ", end " + event.end + ", resource " + event.resourceId);
-                    },
-                    eventDrop: function( event, dayDelta, minuteDelta, allDay) {
-                        console.log("@@ drag/drop event " + event.title + ", start " + event.start + ", end " + event.end + ", resource " + event.resourceId);
-                    },
                     editable: true,
                     resources: [
                         {
@@ -64,6 +43,26 @@
                         {
                             name: 'Resource 3',
                             id:	'resource3'
+                        },
+                        {
+                            name: 'Resource 4',
+                            id:	'resource4'
+                        },
+                        {
+                            name: 'Resource 5',
+                            id:	'resource5'
+                        },
+                        {
+                            name: 'Resource 6',
+                            id:	'resource6'
+                        },
+                        {
+                            name: 'Resource 7',
+                            id:	'resource7'
+                        },
+                        {
+                            name: 'Resource with a very long name 8',
+                            id:	'resource8'
                         }
                     ],
                     events: [
@@ -129,7 +128,7 @@
             }
 
             #calendar {
-                width: 100%;
+                width: 700px;
                 margin: 0 auto;
             }
 

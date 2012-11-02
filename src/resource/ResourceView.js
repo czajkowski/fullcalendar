@@ -80,7 +80,6 @@ function ResourceView(element, calendar, viewName) {
     
     
     // locals
-	
     var dayTable;
     var dayHead;
     var dayHeadCells;
@@ -173,52 +172,102 @@ function ResourceView(element, calendar, viewName) {
         var d;
         var maxd;
         var minutes;
-        var slotNormal = opt('slotMinutes') % 15 == 0;
+        var slotNormal = opt('slotMinutes') % 5 == 0;
 		
-        s =
-        "<table style='width:100%' class='fc-agenda-days fc-border-separate' cellspacing='0'>" +
-        "<thead>" +
-        "<tr>" +
-        "<th class='fc-agenda-axis " + headerClass + "'>&nbsp;</th>";
-        for (i=0; i<colCnt; i++) {
-            s +=
-            "<th class='fc- fc-col" + i + ' ' + headerClass + "'/>"; // fc- needed for setDayID
-        }
-        s +=
-        "<th class='fc-agenda-gutter " + headerClass + "'>&nbsp;</th>" +
-        "</tr>" +
-        "</thead>" +
-        "<tbody>" +
-        "<tr>" +
-        "<th class='fc-agenda-axis " + headerClass + "'>&nbsp;</th>";
-        for (i=0; i<colCnt; i++) {
-            s +=
-            "<td class='fc- fc-col" + i + ' ' + contentClass + "'>" + // fc- needed for setDayID
-            "<div>" +
-            "<div class='fc-day-content'>" +
-            "<div style='position:relative'>&nbsp;</div>" +
-            "</div>" +
-            "</div>" +
-            "</td>";
-        }
-        s +=
-        "<td class='fc-agenda-gutter " + contentClass + "'>&nbsp;</td>" +
-        "</tr>" +
-        "</tbody>" +
-        "</table>";
+	s = "<table cellspacing='0' class='fc-outer-table'>" + 
+		"<tr>" + 
+		    "<td class='c-outer-table-axis'>";
+	
+	// axis column
+	s +=		"<table class='fc-agenda-days fc-border-separate' cellspacing='0'>" +
+			    "<thead>" +
+				"<tr>" +
+				    "<th class='fc-agenda-axis " + headerClass + "'>&nbsp;</th>" + 
+				"</tr>" +
+			    "</thead>" +
+			    "<tbody>" +
+				"<tr>" +
+				    "<td class='fc-agenda-axis " + headerClass + "'><div>&nbsp;</div></td>" + 
+				"</tr>" +
+			    "</tbody>" +
+			"</table>";
+			
+	s +=	    "</td>" +
+		    "<td class='c-outer-table-resources'>" +
+			"<div class='scroll-container'>"
+		
+	// resource columns
+	s +=		    "<table class='fc-agenda-days fc-border-separate' cellspacing='0'>" +
+				"<thead>" +
+				    "<tr>";
+
+				    for (i=0; i<colCnt; i++) {
+					s += "<th class='fc- fc-col" + i + ' ' + headerClass + "'/>"; // fc- needed for setDayID
+				    }
+
+	s +=			    "</tr>" +
+				"</thead>" +
+				"<tbody>" +
+				    "<tr>";
+				
+				    for (i=0; i<colCnt; i++) {
+					s +="<td class='fc- fc-col" + i + ' ' + contentClass + "'>" + // fc- needed for setDayID
+						"<div>" +
+						    "<div class='fc-day-content'>" +
+							"<div style='position:relative'>&nbsp;</div>" +
+						    "</div>" +
+						"</div>" +
+					    "</td>";
+				    }				
+				
+	s +=			    "</tr>" +
+				"</tbody>" +
+			    "</table>";
+		
+	s +=		"</div>" +
+		    "</td>" +
+		    "<td class='c-outer-table-gutter'>";
+		
+	// gutter column
+	s +=		"<table class='fc-agenda-days fc-border-separate' cellspacing='0'>" +
+			    "<thead>" +
+				"<tr>" +
+				    "<th class='fc-agenda-gutter " + headerClass + "'>&nbsp;</th>" + 
+				"</tr>" +
+			    "</thead>" +
+			    "<tbody>" +
+				"<tr>" +
+				    "<td class='fc-agenda-gutter " + headerClass + "'><div>&nbsp;</div></td>" + 
+				"</tr>" +
+			    "</tbody>" +
+			"</table>";
+		
+	s +=	    "</td>" +
+		"</tr>" + 
+	    "</table>";
+	
+    
         dayTable = $(s).appendTo(element);
-        dayHead = dayTable.find('thead');
+        
+	dayHead = dayTable.find('.fc-agenda-days thead');
         dayHeadCells = dayHead.find('th').slice(1, -1);
-        dayBody = dayTable.find('tbody');
-        dayBodyCells = dayBody.find('td').slice(0, -1);
+	
+        dayBody = dayTable.find('.fc-agenda-days tbody');
+        dayBodyCells = dayBody.find('td').slice(1, -1);
+	
         dayBodyCellInners = dayBodyCells.find('div.fc-day-content div');
         dayBodyFirstCell = dayBodyCells.eq(0);
-        dayBodyFirstCellStretcher = dayBodyFirstCell.find('> div');
+	
+        dayBodyFirstCellStretcher = dayBodyFirstCell.find('> div')
+	    .add(dayBody.eq(0).find('td > div'))
+	    .add(dayBody.eq(2).find('td > div')); // there are 3 first cells, one in each table (axis, resource, gutter)
 		
-        markFirstLast(dayHead.add(dayHead.find('tr')));
-        markFirstLast(dayBody.add(dayBody.find('tr')));
 		
-        axisFirstCells = dayHead.find('th:first');
+        markFirstLast(dayHead.eq(2).add(dayHead.eq(2).find('tr')));
+        markFirstLast(dayBody.eq(2).add(dayBody.eq(2).find('tr')));
+		
+        axisFirstCells = dayHead.eq(0).find('th:first');
+	axisFirstCells = axisFirstCells.add(axisFirstCells.closest('table')); // this is added to change the width of the container table 
         gutterCells = dayTable.find('.fc-agenda-gutter');
 		
         slotLayer =
@@ -337,7 +386,11 @@ function ResourceView(element, calendar, viewName) {
         viewHeight = height;
         slotTopCache = {};
 	
-        var headHeight = dayBody.position().top;
+        var headHeight = dayBody.eq(1).position().top;
+	
+	dayHead.eq(0).height(headHeight);
+	dayHead.eq(2).height(headHeight);
+	
         var allDayHeight = slotScroller.position().top; // including divider
         var bodyHeight = Math.min( // total body height, including borders
             height - headHeight,   // when scrollbars
@@ -365,34 +418,35 @@ function ResourceView(element, calendar, viewName) {
         colContentPositions.clear();
 		
         axisWidth = 0;
-        setOuterWidth(
-            axisFirstCells
-            .width('')
-            .each(function(i, _cell) {
-                axisWidth = Math.max(axisWidth, $(_cell).outerWidth());
-            }),
-            axisWidth
-            );
+	
+	axisFirstCells
+	    .width('')
+	    .each(function(i, _cell) {
+		axisWidth = Math.max(axisWidth, $(_cell).outerWidth());
+	    });
+	    
+        setOuterWidth(axisFirstCells,axisWidth);
 		
         var slotTableWidth = slotScroller[0].clientWidth; // needs to be done after axisWidth (for IE7)
         //slotTable.width(slotTableWidth);
 		
         gutterWidth = slotScroller.width() - slotTableWidth;
+	
         if (gutterWidth) {
-            setOuterWidth(gutterCells, gutterWidth);
+            setOuterWidth(gutterCells.add(gutterCells.closest('table')), gutterWidth);
             gutterCells
-            .show()
-            .prev()
-            .removeClass('fc-last');
+		.show()
+		.prev()
+		.removeClass('fc-last');
         }else{
             gutterCells
-            .hide()
-            .prev()
-            .addClass('fc-last');
+		.hide()
+		.prev()
+		.addClass('fc-last');
         }
 		
-        colWidth = Math.floor((slotTableWidth - axisWidth) / colCnt);
-        setOuterWidth(dayHeadCells.slice(0, -1), colWidth);
+        //colWidth = Math.floor((slotTableWidth - axisWidth) / colCnt);
+        //setOuterWidth(dayHeadCells.slice(0, -1), colWidth);
     }
 	
 
