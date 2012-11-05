@@ -296,6 +296,20 @@ function markFirstLast(e) {
 			.addClass('fc-last');
 }
 
+function markFirst(e) {
+	e.children()
+		.removeClass('fc-first')
+		.filter(':first-child')
+			.addClass('fc-first');
+}
+
+function markLast(e){
+	e.children()
+		.removeClass('fc-last')
+		.filter(':last-child')
+			.addClass('fc-last');
+}
+
 
 function setDayID(cell, date) {
 	cell.each(function(i, _cell) {
