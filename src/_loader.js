@@ -19,7 +19,6 @@ css('main.css');
 css('common/common.css');
 css('basic/basic.css');
 css('agenda/agenda.css');
-css('resource/resource.css');
 cssprint('common/print.css');
 
 if (!legacy) {

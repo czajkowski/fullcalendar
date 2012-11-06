@@ -22,14 +22,41 @@
                     header: {
                         left: 'prev,next today',
                         center: 'title',
-                        right: 'resourceDay'
+                        right: 'month,week,resourceDay'
                     },
+		    allDaySlot : false,
 		    slotMinutes : 5, 
 		    axisFormat : "HH:mm",
                     titleFormat: 'ddd, MMM dd, yyyy',
                     defaultView: 'resourceDay',
                     selectable: true,
                     selectHelper: true,
+		    select: function(start, end, allDay, event, resourceId) {
+                        var title = prompt('Event Title:');
+                        if (title) {
+                            console.log("@@ adding event " + title + ", start " + start + ", end " + end + ", allDay " + allDay + ", resource " + resourceId);
+                            calendar.fullCalendar('renderEvent',
+                            {
+                                title: title,
+                                start: start,
+                                end: end,
+                                allDay: allDay,
+                                resourceId: resourceId
+                            },
+                            true // make the event "stick"
+                        );
+                        }
+                        calendar.fullCalendar('unselect');
+                    },
+                    eventResize: function(event, dayDelta, minuteDelta) {
+                        console.log("@@ resize event " + event.title + ", start " + event.start + ", end " + event.end + ", resource " + event.resourceId);
+                    },
+                    eventDrop: function( event, dayDelta, minuteDelta, allDay) {
+                        console.log("@@ drag/drop event " + event.title + ", start " + event.start + ", end " + event.end + ", resource " + event.resourceId);
+                    },	
+		    dayClick : function(){
+			console.log("dayClick");
+		    },
                     editable: true,
                     resources: [
                         {
@@ -132,6 +159,9 @@
                 margin: 0 auto;
             }
 
+	    .sc-resource-scroll-container {overflow: auto; background-color: rgba(255, 0, 0, 0.4);}
+	    .fc-resource-col {min-width: 100px;}
+	    
         </style>
     </head>
     <body>

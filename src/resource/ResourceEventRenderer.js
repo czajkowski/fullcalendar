@@ -201,7 +201,7 @@ function ResourceEventRenderer() {
             if (levelI) {
                 // indented and thin
                 outerWidth = availWidth / (levelI + forward + 1);
-            }else{
+            } else {
                 if (forward) {
                     // moderately wide, aligned left still
                     outerWidth = ((availWidth / (forward + 1)) - (12/2)) * 2; // 12 is the predicted width of resizer =
@@ -210,11 +210,13 @@ function ResourceEventRenderer() {
                     outerWidth = availWidth;
                 }
             }
+	    
             left = leftmost +                                  // leftmost possible
             (availWidth / (levelI + forward + 1) * levelI) // indentation
             * dis + (rtl ? availWidth - outerWidth : 0);   // rtl
             seg.top = top;
             seg.left = left;
+	    
             seg.outerWidth = outerWidth;
             seg.outerHeight = bottom - top;
             html += slotSegHtml(event, seg);
