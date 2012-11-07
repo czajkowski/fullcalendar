@@ -1,5 +1,7 @@
 
 function DayEventRenderer() {
+
+    
     var t = this;
 
 	

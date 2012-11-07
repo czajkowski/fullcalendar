@@ -1,5 +1,6 @@
 
 function AgendaEventRenderer() {
+    
 	var t = this;
 	
 	

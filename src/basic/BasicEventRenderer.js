@@ -107,11 +107,14 @@ function BasicEventRenderer() {
 				trigger('eventDragStart', eventElement, event, ev, ui);
 				hideEvents(event, eventElement);
 				hoverListener.start(function(cell, origCell, rowDelta, colDelta) {
+					console.log(cell, origCell, rowDelta, colDelta);
+				    
 					eventElement.draggable('option', 'revert', !cell || !rowDelta && !colDelta);
 					clearOverlays();
 					if (cell) {
 						//setOverflowHidden(true);
 						dayDelta = rowDelta*7 + colDelta * (opt('isRTL') ? -1 : 1);
+						
 						renderDayOverlay(
 							addDays(cloneDate(event.start), dayDelta),
 							addDays(exclEndDay(event), dayDelta)

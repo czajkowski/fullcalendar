@@ -384,9 +384,11 @@ function ResourceEventRenderer() {
         var colWidth = getColWidth();
         var slotHeight = getSlotHeight();
         var minMinute = getMinMinute();
+	
+	
         eventElement.draggable({
             zIndex: 9,
-            opacity: opt('dragOpacity', 'month'), // use whatever the month view was using
+            opacity: opt('dragOpacity', 'week'), // use whatever the month view was using
             revertDuration: opt('dragRevertDuration'),
             start: function(ev, ui) {
                 trigger('eventDragStart', eventElement, event, ev, ui);
@@ -487,12 +489,13 @@ function ResourceEventRenderer() {
         var colCnt = getColCnt();
         var colWidth = getColWidth();
         var slotHeight = getSlotHeight();
+	
         eventElement.draggable({
             zIndex: 9,
             scroll: false,
             grid: [colWidth, slotHeight],
             axis: colCnt==1 ? 'y' : false,
-            opacity: opt('dragOpacity'),
+            opacity: opt('dragOpacity', 'resource'),
             revertDuration: opt('dragRevertDuration'),
             start: function(ev, ui) {
                 trigger('eventDragStart', eventElement, event, ev, ui);

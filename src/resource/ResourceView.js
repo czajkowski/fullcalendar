@@ -10,7 +10,7 @@ setDefaults({
         agenda: 'h:mm{ - h:mm}'
     },
     dragOpacity: {
-        agenda: .5
+        resource: .5
     },
     minTime: 0,
     maxTime: 24
@@ -82,8 +82,6 @@ function ResourceView(element, calendar, viewName) {
     
     // locals
     
-    var scrollLeft = 0;
-    
     var day = {
 	table : null,
 	
@@ -124,6 +122,7 @@ function ResourceView(element, calendar, viewName) {
 	resourceScrollContainer : null
     };
 
+
     var axisObjects = null;
     var gutterObjects = null;
     var resourceScrollContainers = null;
@@ -135,7 +134,8 @@ function ResourceView(element, calendar, viewName) {
     var colWidth;
     var gutterWidth;
     var slotHeight; // TODO: what if slotHeight changes? (see issue 650)
-    var savedScrollTop;
+    var savedScrollTop = 0;
+    var savedScrollLeft = 0;
 	
     var colCnt;
     var slotCnt;
@@ -166,7 +166,7 @@ function ResourceView(element, calendar, viewName) {
         updateOptions();
         if (!day.table) {
             buildSkeleton();
-        }else{
+        } else {
             clearEvents();
         }
         updateCells();
@@ -219,6 +219,11 @@ function ResourceView(element, calendar, viewName) {
 				    "<td class='fc-agenda-axis " + headerClass + "'><div>&nbsp;</div></td>" + 
 				"</tr>" +
 			    "</tbody>" +
+			    "<tfoot>" + 
+				"<tr>" +
+				    "<td class='fc-agenda-axis " + headerClass + "'><div>&nbsp;</div></td>" + 
+				"</tr>" +
+			    "</tfoot>" +
 			"</table>";
 			
 	s +=	    "</td>" +
@@ -226,7 +231,7 @@ function ResourceView(element, calendar, viewName) {
 			"<div class='sc-resource-scroll-container'>"
 		
 	// resource columns
-	s +=		    "<table class='fc-agenda-days fc-border-separate' cellspacing='0'>" +
+	s +=		    "<table class='fc-agenda-days fc-border-separate' cellspacing='0' style='width:100%'>" +
 				"<thead>" +
 				    "<tr>";
 
@@ -251,6 +256,11 @@ function ResourceView(element, calendar, viewName) {
 				
 	s +=			    "</tr>" +
 				"</tbody>" +
+				"<tfoot>" + 
+				    "<tr>" +
+					"<td colspan='" + colCnt + "' class='" + contentClass + "'><div>&nbsp;</div></td>" + 
+				    "</tr>" +
+				"</tfoot>" +				
 			    "</table>";
 		
 	s +=		"</div>" +
@@ -269,6 +279,11 @@ function ResourceView(element, calendar, viewName) {
 				    "<td class='fc-agenda-gutter " + headerClass + "'><div>&nbsp;</div></td>" + 
 				"</tr>" +
 			    "</tbody>" +
+			    "<tfoot>" + 
+				"<tr>" +
+				    "<td class='fc-agenda-gutter " + headerClass + "'><div>&nbsp;</div></td>" + 
+				"</tr>" +
+			    "</tfoot>" +			    
 			"</table>";
 		
 	s +=	    "</td>" +
@@ -421,15 +436,16 @@ function ResourceView(element, calendar, viewName) {
 	
 	//associate resource scroll elements
 	day.resourceScrollContainer.scroll(function(){
-	    scrollLeft= day.resourceScrollContainer.scrollLeft();
-	    slots.eventContainer.css('left', -scrollLeft);
-	    allDay.eventContainer.css('left', -scrollLeft);
+	    savedScrollLeft = day.resourceScrollContainer.scrollLeft();
+	    slots.eventContainer.css('left', -savedScrollLeft);
+	    allDay.eventContainer.css('left', -savedScrollLeft);
 	});
     }
 	
 	
 	
     function updateCells() {
+	
         var i;
         var headCell;
         var bodyCell;
@@ -458,6 +474,7 @@ function ResourceView(element, calendar, viewName) {
 	
 	
     function setHeight(height, dateChanged) {
+	
         if (height === undefined) {
             height = viewHeight;
         }
@@ -503,6 +520,9 @@ function ResourceView(element, calendar, viewName) {
     function setWidth(width) {
         viewWidth = width;
         colContentPositions.clear();
+	
+	var columnHeaderSize = getMaxColumnHeaderSize();
+	colWidth = columnHeaderSize.width;	
 		
         axisWidth = 0;
 	axisObjects
@@ -526,9 +546,6 @@ function ResourceView(element, calendar, viewName) {
             gutterObjects.hide();
 	    //resourceScrollContainers.addClass('fc-last');
         }
-	
-	//allDay.table.css('width', '100%');
-
 
 	var resourcesBodyWidth = viewWidth - axisWidth - gutterWidth;
 	
@@ -543,7 +560,21 @@ function ResourceView(element, calendar, viewName) {
 	}
     }
 	
-
+    function getMaxColumnHeaderSize(){
+	
+	var size = {
+	    height : 0,
+	    width : 0
+	}
+	
+	day.headResourceCells.each(function(i, column){
+	    var col  = $(column);
+	    size.height = Math.max(col.height(), size.height);
+	    size.width = Math.max(col.width(), size.width);
+	});
+	
+	return size;
+    }
 
     function resetScroll() {
         var d0 = zeroDate();
@@ -560,11 +591,16 @@ function ResourceView(element, calendar, viewName) {
 	
     function beforeHide() {
         savedScrollTop = slots.scroller.scrollTop();
+	savedScrollLeft = day.resourceScrollContainer.scrollLeft();
     }
 	
 	
     function afterShow() {
         slots.scroller.scrollTop(savedScrollTop);
+	day.resourceScrollContainer.scrollLeft(savedScrollLeft);
+	slots.eventContainer.css('left', -savedScrollLeft);
+	allDay.eventContainer.css('left', -savedScrollLeft);	
+	
     }
 	
 	
@@ -586,8 +622,6 @@ function ResourceView(element, calendar, viewName) {
 	
 	
     function slotClick(ev) {
-	
-	console.log('slotClick', ev);	
 	
         if (!opt('selectable')) { // if selectable, SelectionManager will worry about dayClick
             var col = Math.min(colCnt-1, Math.floor((ev.pageX - day.table.offset().left - axisWidth) / colWidth));
@@ -697,12 +731,12 @@ function ResourceView(element, calendar, viewName) {
 	
 	
     function colContentLeft(col) {
-        return colContentPositions.left(col, scrollLeft) - axisWidth;
+        return colContentPositions.left(col, savedScrollLeft) - axisWidth;
     }
 	
 	
     function colContentRight(col) {
-        return colContentPositions.right(col, scrollLeft) - axisWidth;
+        return colContentPositions.right(col, savedScrollLeft) - axisWidth;
     }
 	
 	

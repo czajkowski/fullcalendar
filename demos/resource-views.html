@@ -22,8 +22,14 @@
                     header: {
                         left: 'prev,next today',
                         center: 'title',
-                        right: 'month,week,resourceDay'
+                        right: 'month,basicWeek,resourceDay'
                     },
+		    dragOpacity: {
+			resource: .5,
+			basicWeek: .5,
+			month: .5
+			
+		    },		    
 		    allDaySlot : false,
 		    slotMinutes : 5, 
 		    axisFormat : "HH:mm",
@@ -159,8 +165,9 @@
                 margin: 0 auto;
             }
 
-	    .sc-resource-scroll-container {overflow: auto; background-color: rgba(255, 0, 0, 0.4);}
-	    .fc-resource-col {min-width: 100px;}
+	    .sc-resource-scroll-container {overflow: hidden;}
+	    .fc-outer-day-table .sc-resource-scroll-container {overflow: auto}
+	    .fc-resource-col {min-width: 150px;}
 	    
         </style>
     </head>
