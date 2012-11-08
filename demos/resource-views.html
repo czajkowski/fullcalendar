@@ -18,7 +18,7 @@
                 var m = date.getMonth();
                 var y = date.getFullYear();
 		
-                var calendar = $('#calendar').fullCalendar({
+                calendar = $('#calendar').fullCalendar({
                     header: {
                         left: 'prev,next today',
                         center: 'title',
@@ -42,23 +42,23 @@
                         if (title) {
                             console.log("@@ adding event " + title + ", start " + start + ", end " + end + ", allDay " + allDay + ", resource " + resourceId);
                             calendar.fullCalendar('renderEvent',
-                            {
-                                title: title,
-                                start: start,
-                                end: end,
-                                allDay: allDay,
-                                resourceId: resourceId
-                            },
-                            true // make the event "stick"
-                        );
+				{
+				    title: title,
+				    start: start,
+				    end: end,
+				    allDay: allDay,
+				    resourceId: resourceId
+				},
+				true // make the event "stick"
+			    );
                         }
                         calendar.fullCalendar('unselect');
                     },
                     eventResize: function(event, dayDelta, minuteDelta) {
-                        console.log("@@ resize event " + event.title + ", start " + event.start + ", end " + event.end + ", resource " + event.resourceId);
+                        console.log("@@ resize event(" + event._id + ") " + event.title + ", start " + event.start + ", end " + event.end + ", resource " + event.resourceId);
                     },
-                    eventDrop: function( event, dayDelta, minuteDelta, allDay) {
-                        console.log("@@ drag/drop event " + event.title + ", start " + event.start + ", end " + event.end + ", resource " + event.resourceId);
+                    eventDrop: function(event, dayDelta, minuteDelta, allDay) {
+                        console.log("@@ drag/drop event(" + event._id + ") " + event.title + ", start " + event.start + ", end " + event.end + ", resource " + event.resourceId);
                     },	
 		    dayClick : function(){
 			console.log("dayClick");
@@ -98,6 +98,20 @@
                             id:	'resource8'
                         }
                     ],
+		    resourceAvailability : function(resource, day){
+			
+			return [
+			    {
+				from : '06:00',
+				to : '12:00'
+			    },
+			    {
+				from : '13:00',
+				to : '18:00'
+			    }
+			]
+			
+		    },
                     events: [
                         {
                             title: 'All Day Event 1',
@@ -165,9 +179,11 @@
                 margin: 0 auto;
             }
 
-	    .sc-resource-scroll-container {overflow: hidden;}
+	    .sc-resource-scroll-container, 
+	    .sc-availability-scroll-container {overflow: hidden;}
 	    .fc-outer-day-table .sc-resource-scroll-container {overflow: auto}
 	    .fc-resource-col {min-width: 150px;}
+	    .fc-availability-overlay {background-color: rgba(255, 0, 0, 0.1); position:absolute; pointer-events: none;}
 	    
         </style>
     </head>

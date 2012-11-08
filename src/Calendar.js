@@ -35,7 +35,7 @@ function Calendar(element, options, eventSources, resourceSources) {
 	var isFetchNeeded = t.isFetchNeeded;
 	var fetchEvents = t.fetchEvents;
     
-    ResourceManager.call(t, options);
+	ResourceManager.call(t, options);
 	
 	// locals
 	var _element = element[0];
@@ -217,6 +217,9 @@ function Calendar(element, options, eventSources, resourceSources) {
 			}
 			currentView.sizeDirty = false;
 			currentView.eventsDirty = false;
+			
+			(currentView.afterRender || noop)();
+			
 			updateEvents(forceEventRender);
 			
 			elementOuterWidth = element.outerWidth();

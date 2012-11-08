@@ -60,6 +60,7 @@ function ResourceView(element, calendar, viewName) {
     t.dragStop = dragStop;
     t.resourceCol = resourceCol;
     t.resources = calendar.fetchResources();
+    t.afterRender = afterRender
     
 	
     // imports
@@ -109,11 +110,14 @@ function ResourceView(element, calendar, viewName) {
 	layer : null,
 	scroller : null,
 	content : null,
-	eventContainer : null,
 	table : null,
 	tableFirstInner : null,
 	
-	resourceScrollContainer : null
+	resourceScrollContainer : null,
+	eventContainer : null,
+	
+	availabilityScrollContainer : null,
+	availabilityContainer : null
     };
 
     var allDay = {
@@ -126,6 +130,7 @@ function ResourceView(element, calendar, viewName) {
 	resourceScrollContainer : null
     };
 
+    var availabilityOverlayTable = [];
 
     var axisObjects = null;
     var gutterObjects = null;
@@ -406,6 +411,9 @@ function ResourceView(element, calendar, viewName) {
         slots.resourceScrollContainer = $("<div style='position:absolute;top:0;left:0' class='sc-resource-scroll-container'/>").appendTo(slots.content);
         slots.eventContainer = $("<div style='position:absolute;z-index:8;top:0;left:0'/>").appendTo(slots.resourceScrollContainer);
 		
+	slots.availabilityScrollContainer = $("<div style='position:absolute;top:0;left:0' class='sc-availability-scroll-container'/>").appendTo(slots.content);
+	slots.availabilityContainer = $("<div style='position:absolute;z-index:8;top:0;left:0'/>").appendTo(slots.availabilityScrollContainer);		
+		
         s = "<table class='fc-agenda-slots' style='width:100%' cellspacing='0'>" +
 	    "<tbody>";
 	
@@ -442,10 +450,10 @@ function ResourceView(element, calendar, viewName) {
 	day.resourceScrollContainer.scroll(function(){
 	    savedScrollLeft = day.resourceScrollContainer.scrollLeft();
 	    slots.eventContainer.css('left', -savedScrollLeft);
+	    slots.availabilityContainer.css('left', -savedScrollLeft);
 	    allDay.eventContainer.css('left', -savedScrollLeft);
 	});
-    }
-	
+    }	
 	
 	
     function updateCells() {
@@ -475,9 +483,9 @@ function ResourceView(element, calendar, viewName) {
         }
     }
 	
-	
-	
+		
     function setHeight(height, dateChanged) {
+	
         if (height === undefined) {
             height = viewHeight;
         }
@@ -524,15 +532,16 @@ function ResourceView(element, calendar, viewName) {
 	day.resourceScrollContainer.width(prevSCWidth);
 
 	slots.resourceScrollContainer.height(slots.table.height());
+	slots.availabilityScrollContainer.height(slots.table.height());
 
         if (dateChanged) {
             resetScroll();
         }
     }
-	
-	
+		
 	
     function setWidth(width) {
+	
         viewWidth = width;
         colContentPositions.clear();
 	
@@ -562,6 +571,8 @@ function ResourceView(element, calendar, viewName) {
 	setOuterWidth(day.resourceScrollContainer, resourcesBodyWidth);
 	setOuterWidth(slots.resourceScrollContainer, resourcesBodyWidth);
 	slots.resourceScrollContainer.css('left', axisWidth);
+	setOuterWidth(slots.availabilityScrollContainer, resourcesBodyWidth);
+	slots.availabilityScrollContainer.css('left', axisWidth);
 
 	if (day.resourceScrollContainer.width() < day.resourceScrollContainer.find('table').width()){
 	    day.footerSections.show();
@@ -578,6 +589,7 @@ function ResourceView(element, calendar, viewName) {
 	}
     }
 	
+	
     function getMaxColumnHeaderSize(){
 	
 	var size = {
@@ -593,6 +605,39 @@ function ResourceView(element, calendar, viewName) {
 	
 	return size;
     }
+
+    
+    function renderAvailabilityOverlay(){
+
+	var i;
+	for (i=0; i<colCnt; i++) {
+	    
+	    var availability = opt('resourceAvailability');
+	    
+	    if ($.isFunction(availability)) {
+		availability = availability(null, null);
+	    }
+	    else if ($.isArray(availability)) {
+		availability = availability[i];
+	    }	    
+	    
+	    if(availability){
+		
+		availabilityOverlayTable[i] = availabilityOverlayTable[i] || $("<div class='fc-availability-overlay'/>")
+
+		availabilityOverlayTable[i].css({
+		    height : '100px', 
+		    width: colWidth, 
+		    left : (colWidth + 1) * i, // + border 
+		    top : '100px'
+		});
+
+		slots.availabilityContainer.append(availabilityOverlayTable[i]);
+	    }
+	}
+
+    }
+
 
     function resetScroll() {
         var d0 = zeroDate();
@@ -621,7 +666,12 @@ function ResourceView(element, calendar, viewName) {
 	
     }
 	
-	
+    
+    function afterRender(){
+	renderAvailabilityOverlay();
+
+    }
+    
 	
     /* Slot/Day clicking and binding
 	-----------------------------------------------------------------------*/

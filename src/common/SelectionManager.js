@@ -82,6 +82,7 @@ function SelectionManager() {
 					dates = null;
 				}
 			}, ev);
+			
 			$(document).one('mouseup', function(ev) {
 				hoverListener.stop();
 				if (dates) {

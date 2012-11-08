@@ -11,6 +11,7 @@ var eventGUID = 1;
 
 
 function EventManager(options, _sources) {
+    
 	var t = this;
 	
 	

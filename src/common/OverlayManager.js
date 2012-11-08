@@ -13,10 +13,11 @@ function OverlayManager() {
 	var unusedOverlays = [];
 	
 	
-	function renderOverlay(rect, parent) {
+	function renderOverlay(rect, parent, overlayClass) {
+	    
 		var e = unusedOverlays.shift();
 		if (!e) {
-			e = $("<div class='fc-cell-overlay' style='position:absolute;z-index:3'/>");
+			e = $("<div class='fc-cell-overlay " + (overlayClass || '') + "' style='position:absolute;z-index:3'/>");
 		}
 		if (e[0].parentNode != parent[0]) {
 			e.appendTo(parent);
