@@ -98,6 +98,10 @@ function ResourceView(element, calendar, viewName) {
 	bodyResourceFirstCell : null, 
 	bodyStrecherCells : null,
 	
+	footerSections : null, 
+	footerAxisCell : null ,
+	footerGutterCell : null,
+	
 	resourceScrollContainer : null
     };
     
@@ -256,11 +260,6 @@ function ResourceView(element, calendar, viewName) {
 				
 	s +=			    "</tr>" +
 				"</tbody>" +
-				"<tfoot>" + 
-				    "<tr>" +
-					"<td colspan='" + colCnt + "' class='" + contentClass + "'><div>&nbsp;</div></td>" + 
-				    "</tr>" +
-				"</tfoot>" +				
 			    "</table>";
 		
 	s +=		"</div>" +
@@ -314,21 +313,26 @@ function ResourceView(element, calendar, viewName) {
 	    .add(day.bodyAxisCell.find('> div'))
 	    .add(day.bodyGutterCell.find('> div')); // there are 3 first cells, one in each table (axis, resource, gutter)
 
+	day.footerSections	= day.table.find('.fc-agenda-days tfoot');
+	day.footerAxisCell	= day.footerSections.find('.fc-agenda-axis');
+	day.footerGutterCell	= day.footerSections.find('.fc-agenda-gutter');
+
+
         markFirstLast(day.headSections);
-	markFirst(day.headSections.eq(0).find('tr'))
-	markLast(day.headSections.eq(2).find('tr'))
+	markFirst(day.headSections.eq(0).find('tr'));
+	markLast(day.headSections.eq(2).find('tr'));
 	
-        markFirstLast(day.bodySections);
-	markFirst(day.bodySections.eq(0).find('tr'))
-	markLast(day.bodySections.eq(2).find('tr'))
+	markFirst(day.bodySections);
+	markLast(day.bodySections.eq(1));
+
+	markLast(day.footerSections);
+	markLast(day.footerSections.eq(1).find('tr'));
 
 	axisObjects = day.headSections.eq(0).find('th:first');
 	axisObjects = axisObjects.add(day.headSections.eq(0).closest('table')); // this is added to change the width of the container table 
 
 	gutterObjects = day.table.find('.fc-agenda-gutter');
 	gutterObjects = gutterObjects.add(day.headSections.eq(2).closest('table')); // this is added to change the width of the container table 
-		
-		
 		
 		
         slots.layer = $("<div style='position:absolute;z-index:2;left:0;width:100%'/>").appendTo(element);
@@ -474,20 +478,17 @@ function ResourceView(element, calendar, viewName) {
 	
 	
     function setHeight(height, dateChanged) {
-	
         if (height === undefined) {
             height = viewHeight;
         }
         viewHeight = height;
         slotTopCache = {};
 	
-        var headHeight = day.bodySections.eq(1).position().top; // the hight of the resoureces section
-	day.headSections.eq(0).height(headHeight);
-	day.headSections.eq(2).height(headHeight);
+        var headHeight = day.bodySections.eq(1).position().top; // the hight of the resoureces section, it may be the largest
+	day.headSections.eq(0).find('tr').height(headHeight);
+	day.headSections.eq(2).find('tr').height(headHeight);
 	
         var allDayHeight = slots.scroller.position().top; // including divider
-	
-	
 	if(opt('allDaySlot')){
 	    var allDayDividerHeight = allDay.divider ? allDay.divider.outerHeight() : 0;
 	    allDay.rows.height(allDayHeight - allDayDividerHeight);
@@ -498,16 +499,30 @@ function ResourceView(element, calendar, viewName) {
             height - headHeight,   // when scrollbars
             slots.table.height() + allDayHeight + 1 // when no scrollbars. +1 for bottom border
             );
-		
-        day.bodyStrecherCells.height(bodyHeight - vsides(day.bodyResourceFirstCell));
-		
+	
+	// the slots container should be inder the header
         slots.layer.css('top', headHeight);
+        
+        day.bodyStrecherCells.height(bodyHeight - vsides(day.bodyResourceFirstCell));
+	slots.scroller.height(bodyHeight - allDayHeight);
 	
-        slots.scroller.height(bodyHeight - allDayHeight - 1);
-		
         slotHeight = slots.tableFirstInner.height() + 1; // +1 for border
-		
+
+	// make the scroll containr small to show the bottom scrollbars
+	var prevSCWidth = day.resourceScrollContainer.width();
+	day.resourceScrollContainer.width(day.table.width()/10);
 	
+	// count bottom scroll bar height and resize the footer
+	var resourceContainer = day.table.find('.sc-resource-scroll-container');
+	var resourceTable = resourceContainer.find('table');
+	var resourceContainerHeight = resourceContainer.height();
+	var resourceTableHeight = resourceTable.height();
+	var footerHeight = resourceContainerHeight - resourceTableHeight;
+	setOuterHeight(day.footerSections.find('div'), footerHeight - 1);
+	
+	// restore previous scroll container width
+	day.resourceScrollContainer.width(prevSCWidth);
+
 	slots.resourceScrollContainer.height(slots.table.height());
 
         if (dateChanged) {
@@ -521,6 +536,7 @@ function ResourceView(element, calendar, viewName) {
         viewWidth = width;
         colContentPositions.clear();
 	
+	// count the maximum resource column width for the d'n'd grid
 	var columnHeaderSize = getMaxColumnHeaderSize();
 	colWidth = columnHeaderSize.width;	
 		
@@ -533,26 +549,28 @@ function ResourceView(element, calendar, viewName) {
         setOuterWidth(axisObjects,axisWidth);
 		
         var slotTableWidth = slots.scroller[0].clientWidth; // needs to be done after axisWidth (for IE7)
-        //slotTable.width(slotTableWidth);
 		
         gutterWidth = slots.scroller.width() - slotTableWidth;
         if (gutterWidth) {
             setOuterWidth(gutterObjects, gutterWidth);
             gutterObjects.show();
-	    
-	    //day.se .removeClass('fc-last');
-	    
         } else {
             gutterObjects.hide();
-	    //resourceScrollContainers.addClass('fc-last');
         }
 
 	var resourcesBodyWidth = viewWidth - axisWidth - gutterWidth;
-	
 	setOuterWidth(day.resourceScrollContainer, resourcesBodyWidth);
 	setOuterWidth(slots.resourceScrollContainer, resourcesBodyWidth);
 	slots.resourceScrollContainer.css('left', axisWidth);
-	
+
+	if (day.resourceScrollContainer.width() < day.resourceScrollContainer.find('table').width()){
+	    day.footerSections.show();
+	} else {
+	    day.footerSections.hide();
+	    markLast(day.bodySections.eq(0));
+	    markLast(day.bodySections.eq(2));
+	}
+
 	if(opt('allDaySlot')){
 	    setOuterWidth(allDay.resourceScrollContainer, resourcesBodyWidth);
 	    allDay.sections.eq(1).css('width', resourcesBodyWidth);
