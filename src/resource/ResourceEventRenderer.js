@@ -388,15 +388,18 @@ function ResourceEventRenderer() {
 	
         eventElement.draggable({
             zIndex: 9,
-            opacity: opt('dragOpacity', 'week'), // use whatever the month view was using
+            opacity: opt('dragOpacity', 'resource'), // use whatever the month view was using
             revertDuration: opt('dragRevertDuration'),
+	    grid: [colWidth + 1, 0],
             start: function(ev, ui) {
                 trigger('eventDragStart', eventElement, event, ev, ui);
                 hideEvents(event, eventElement);
                 origWidth = eventElement.width();
+		
                 hoverListener.start(function(cell, origCell, rowDelta, colDelta) {
                     clearOverlays();
                     if (cell) {
+			
                         //setOverflowHidden(true);
                         revert = false;
                         dayDelta = colDelta * dis;
@@ -493,7 +496,7 @@ function ResourceEventRenderer() {
         eventElement.draggable({
             zIndex: 9,
             scroll: false,
-            grid: [colWidth, slotHeight],
+            grid: [colWidth + 1, slotHeight],
             axis: colCnt==1 ? 'y' : false,
             opacity: opt('dragOpacity', 'resource'),
             revertDuration: opt('dragRevertDuration'),

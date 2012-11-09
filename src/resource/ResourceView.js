@@ -408,11 +408,12 @@ function ResourceView(element, calendar, viewName) {
         slots.scroller = $("<div style='position:absolute;width:100%;overflow-x:hidden;overflow-y:auto'/>") .appendTo(slots.layer);
         slots.content = $("<div style='position:relative;width:100%;overflow:hidden'/>").appendTo(slots.scroller);
 	
+	slots.availabilityScrollContainer = $("<div style='position:absolute;top:0;left:0' class='sc-availability-scroll-container'/>").appendTo(slots.content);
+	slots.availabilityContainer = $("<div style='position:absolute;z-index:8;top:0;left:0'/>").appendTo(slots.availabilityScrollContainer);		
+	
         slots.resourceScrollContainer = $("<div style='position:absolute;top:0;left:0' class='sc-resource-scroll-container'/>").appendTo(slots.content);
         slots.eventContainer = $("<div style='position:absolute;z-index:8;top:0;left:0'/>").appendTo(slots.resourceScrollContainer);
 		
-	slots.availabilityScrollContainer = $("<div style='position:absolute;top:0;left:0' class='sc-availability-scroll-container'/>").appendTo(slots.content);
-	slots.availabilityContainer = $("<div style='position:absolute;z-index:8;top:0;left:0'/>").appendTo(slots.availabilityScrollContainer);		
 		
         s = "<table class='fc-agenda-slots' style='width:100%' cellspacing='0'>" +
 	    "<tbody>";
@@ -629,8 +630,6 @@ function ResourceView(element, calendar, viewName) {
 	    else if ($.isArray(availability)) {
 		availability = availability[i];
 	    }	   
-	    
-	    console.log(resources[i].id, availability);
 	    
 	    if(availability){
 			
