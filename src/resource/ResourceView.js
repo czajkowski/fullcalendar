@@ -130,7 +130,7 @@ function ResourceView(element, calendar, viewName) {
 	resourceScrollContainer : null
     };
 
-    var availabilityOverlayTable = [];
+    var availabilityOverlays = [];
 
     var axisObjects = null;
     var gutterObjects = null;
@@ -609,30 +609,58 @@ function ResourceView(element, calendar, viewName) {
     
     function renderAvailabilityOverlay(){
 
-	var i;
+	var i, j;
+	var top, height, left, width;
+	var overlayNo = 0;
+	var date = clearTime(calendar.getDate());
+	var from, to;
+
+	//crear previous availability
+	slots.availabilityContainer.html('');
+
 	for (i=0; i<colCnt; i++) {
 	    
-	    var availability = opt('resourceAvailability');
 	    
+	    var availability = resources[i].availability;
+
 	    if ($.isFunction(availability)) {
-		availability = availability(null, null);
+		availability = availability(null);
 	    }
 	    else if ($.isArray(availability)) {
 		availability = availability[i];
-	    }	    
+	    }	   
+	    
+	    console.log(resources[i].id, availability);
 	    
 	    if(availability){
+			
+		for(j=0; j<availability.length; j++){
+		    
+		    from = cloneDate(date);
+		    from = addMinutes(from, parseTime(availability[j].from));
+		    
+		    to = cloneDate(date);
+		    to = addMinutes(to, parseTime(availability[j].to));
+		    
+		    
+		    top = timePosition(date, from);
+		    height = timePosition(date, to) - top;
+		    left = (colWidth + 1) * i, // + border 
+		    width = colWidth
 		
-		availabilityOverlayTable[i] = availabilityOverlayTable[i] || $("<div class='fc-availability-overlay'/>")
+		    availabilityOverlays[overlayNo] = availabilityOverlays[overlayNo] || $("<div class='fc-availability-overlay'/>")
+		    availabilityOverlays[overlayNo].css({
+			height : height, 
+			width: width, 
+			left : left,
+			top : top
+		    });
 
-		availabilityOverlayTable[i].css({
-		    height : '100px', 
-		    width: colWidth, 
-		    left : (colWidth + 1) * i, // + border 
-		    top : '100px'
-		});
-
-		slots.availabilityContainer.append(availabilityOverlayTable[i]);
+		    slots.availabilityContainer.append(availabilityOverlays[overlayNo]);
+		    
+		    overlayNo++;
+		}
+			
 	    }
 	}
 

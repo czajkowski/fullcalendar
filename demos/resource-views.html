@@ -18,7 +18,27 @@
                 var m = date.getMonth();
                 var y = date.getFullYear();
 		
-                calendar = $('#calendar').fullCalendar({
+		function getResourceAvailability(resource, day){	
+		    
+		    if(resource == 'resource2'){
+			return [
+			    { from : '06:00', to : '07:00' },
+			    { from : '08:00', to : '09:00' },
+			    { from : '10:00', to : '11:00' },
+			    { from : '12:00', to : '13:00' },
+			    { from : '14:00', to : '15:00' }
+			]
+			
+		    }
+		    
+		    return [
+			{ from : '06:00', to : '12:00' },
+			{ from : '13:00', to : '18:00' }
+		    ]
+
+		}
+		
+                var calendar = $('#calendar').fullCalendar({
                     header: {
                         left: 'prev,next today',
                         center: 'title',
@@ -67,51 +87,61 @@
                     resources: [
                         {
                             name: 'Resource 1',
-                            id:	'resource1'
+                            id:	'resource1',
+			    availability : function(day){
+				return getResourceAvailability('resource1', day);
+			    }
                         },
                         {
                             name: 'Resource 2',
-                            id:	'resource2'
+                            id:	'resource2',
+			    availability : function(day){
+				return getResourceAvailability('resource2', day);
+			    }
                         },
                         {
                             name: 'Resource 3',
-                            id:	'resource3'
+                            id:	'resource3',
+			    availability : function(day){
+				return getResourceAvailability('resource3', day);
+			    }
                         },
                         {
                             name: 'Resource 4',
-                            id:	'resource4'
+                            id:	'resource4',
+			    availability : function(day){
+				return getResourceAvailability('resource4', day);
+			    }
                         },
                         {
                             name: 'Resource 5',
-                            id:	'resource5'
+                            id:	'resource5',
+			    availability : function(day){
+				return getResourceAvailability('resource5', day);
+			    }
                         },
                         {
                             name: 'Resource 6',
-                            id:	'resource6'
+                            id:	'resource6',
+			    availability : function(day){
+				return getResourceAvailability('resource6', day);
+			    }
                         },
                         {
                             name: 'Resource 7',
-                            id:	'resource7'
+                            id:	'resource7',
+			    availability : function(day){
+				return getResourceAvailability('resource7', day);
+			    }
                         },
                         {
                             name: 'Resource with a very long name 8',
-                            id:	'resource8'
+                            id:	'resource8',
+			    availability : function(day){
+				return getResourceAvailability('resource8', day);
+			    }
                         }
                     ],
-		    resourceAvailability : function(resource, day){
-			
-			return [
-			    {
-				from : '06:00',
-				to : '12:00'
-			    },
-			    {
-				from : '13:00',
-				to : '18:00'
-			    }
-			]
-			
-		    },
                     events: [
                         {
                             title: 'All Day Event 1',
@@ -175,7 +205,7 @@
             }
 
             #calendar {
-                width: 700px;
+                width: 900px;
                 margin: 0 auto;
             }
 
