@@ -39,23 +39,45 @@
 		}
 		
                 var calendar = $('#calendar').fullCalendar({
+		    firstDay : 1,
+		    dayNames : ['Niedziela',  'Poniedziałek', 'Wtorek','Środa',
+				'Czwartek', 'Piątek', 'Sobota'],
+		    dayNamesShort : ['Niedz.', 'Pon.','Wt.',
+				'Śr.','Czw.','Pt.','Sob.'],
+		    monthNames : ['Styczeń', 'Luty', 'Marzec',
+				'Kwiecień', 'Maj', 'Czerwiec',
+				'Lipiec', 'Sierpień', 'Wrzesień',
+				'Październik', 'Listopad', 'Grudzień'],
+		    monthNamesShort : ['Sty.', 'Lut.', 'Mar.',
+				'Kwi.', 'Maj', 'Cze.',
+				'Lip.', 'Sie.', 'Wrz.',
+				'Paź.', 'Lis.', 'Gru.'],
+		    buttonText : {
+			today:    'Dzisiaj',
+			month:    'Miesiąc',
+			week:     'Tydzień',
+			day:      'Dzień',
+			resource: 'Dzień'
+		    },		    
+		    
                     header: {
                         left: 'prev,next today',
                         center: 'title',
-                        right: 'month,basicWeek,resourceDay'
+                        right: 'month,agendaWeek,resourceDay'
                     },
 		    dragOpacity: {
 			resource: .5,
 			basicWeek: .5,
 			month: .5
 			
-		    },		    
+		    },
 		    allDaySlot : true,
 		    slotMinutes : 5, 
 		    axisFormat : "HH:mm",
                     titleFormat: 'ddd, MMM dd, yyyy',
                     defaultView: 'resourceDay',
                     selectable: true,
+		    selectMultipleDays : false,
                     selectHelper: true,
 		    select: function(start, end, allDay, event, resourceId) {
                         var title = prompt('Event Title:');
@@ -205,7 +227,7 @@
             }
 
             #calendar {
-                width: 900px;
+                width: 500px;
                 margin: 0 auto;
             }
 

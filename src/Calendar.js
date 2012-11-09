@@ -373,6 +373,7 @@ function Calendar(element, options, eventSources, resourceSources) {
 	
 
 	function select(start, end, allDay) {
+		
 		currentView.select(start, end, allDay===undefined ? true : allDay);
 	}
 	

@@ -67,6 +67,7 @@ var defaults = {
 	
 	//selectable: false,
 	unselectAuto: true,
+	selectMultipleDays : true,
 	
 	dropAccept: '*'
 	
