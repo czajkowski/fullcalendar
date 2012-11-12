@@ -22,9 +22,8 @@ setDefaults({
 
 
 function ResourceView(element, calendar, viewName) {
+    
     var t = this;
-	
-	
     // exports
     t.renderResource = renderResource;
     t.setWidth = setWidth;
@@ -625,7 +624,7 @@ function ResourceView(element, calendar, viewName) {
 	    var availability = resources[i].availability;
 
 	    if ($.isFunction(availability)) {
-		availability = availability(null);
+		availability = availability(date);
 	    }
 	    else if ($.isArray(availability)) {
 		availability = availability[i];
@@ -644,8 +643,8 @@ function ResourceView(element, calendar, viewName) {
 		    
 		    top = timePosition(date, from);
 		    height = timePosition(date, to) - top;
-		    left = (colWidth + 1) * i, // + border 
-		    width = colWidth
+		    width = getMaxColumnHeaderSize().width;
+		    left = (width + 1) * i, // + border 
 		
 		    availabilityOverlays[overlayNo] = availabilityOverlays[overlayNo] || $("<div class='fc-availability-overlay'/>")
 		    availabilityOverlays[overlayNo].css({

@@ -18,7 +18,7 @@
                 var m = date.getMonth();
                 var y = date.getFullYear();
 		
-		function getResourceAvailability(resource, day){	
+		function getResourceAvailability(resource, day){
 		    
 		    if(resource == 'resource2'){
 			return [
@@ -141,28 +141,7 @@
 			    availability : function(day){
 				return getResourceAvailability('resource5', day);
 			    }
-                        },
-                        {
-                            name: 'Resource 6',
-                            id:	'resource6',
-			    availability : function(day){
-				return getResourceAvailability('resource6', day);
-			    }
-                        },
-                        {
-                            name: 'Resource 7',
-                            id:	'resource7',
-			    availability : function(day){
-				return getResourceAvailability('resource7', day);
-			    }
-                        },
-                        {
-                            name: 'Resource with a very long name 8',
-                            id:	'resource8',
-			    availability : function(day){
-				return getResourceAvailability('resource8', day);
-			    }
-                        }
+                        }			
                     ],
                     events: [
                         {
