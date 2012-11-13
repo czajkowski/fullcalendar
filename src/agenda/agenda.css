@@ -17,6 +17,7 @@
 	text-align: right;
 	white-space: nowrap;
 	font-weight: normal;
+	font-size: 10px;
 	}
 	
 .fc-agenda .fc-day-content {
@@ -67,7 +68,7 @@
 	}
 	
 .fc-agenda-slots td div {
-	height: 20px;
+	height: 14px;
 	}
 	
 .fc-agenda-slots tr.fc-slot0 th,
@@ -104,6 +105,7 @@
 .fc-event-vert .fc-event-time {
 	white-space: nowrap;
 	font-size: 10px;
+	line-height: 14px;
 	}
 	
 .fc-event-vert .fc-event-bg { /* makes the event lighter w/ a semi-transparent overlay  */

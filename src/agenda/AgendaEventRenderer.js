@@ -299,6 +299,7 @@ function AgendaEventRenderer() {
 		}else{
 			html += "div";
 		}
+		
 		html +=
 			" class='" + classes.join(' ') + "'" +
 			" style='position:absolute;z-index:8;top:" + seg.top + "px;left:" + seg.left + "px;" + skinCss + "'" +

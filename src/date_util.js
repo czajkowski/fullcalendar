@@ -246,6 +246,7 @@ function formatDate(date, format, options) {
 
 
 function formatDates(date1, date2, format, options) {
+    
 	options = options || defaults;
 	var date = date1,
 		otherDate = date2,

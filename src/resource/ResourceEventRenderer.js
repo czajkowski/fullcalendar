@@ -316,6 +316,7 @@ function ResourceEventRenderer() {
         }else{
             html += "div";
         }
+	
         html +=
         " class='" + classes.join(' ') + "'" +
         " style='position:absolute;z-index:8;top:" + seg.top + "px;left:" + seg.left + "px;" + skinCss + "'" +
@@ -323,7 +324,7 @@ function ResourceEventRenderer() {
         "<div class='fc-event-inner fc-event-skin'" + skinCssAttr + ">" +
         "<div class='fc-event-head fc-event-skin'" + skinCssAttr + ">" +
         "<div class='fc-event-time'>" +
-        htmlEscape(formatDates(event.start, event.end, opt('timeFormat'))) +
+        htmlEscape(formatDates(event.start, event.end, opt('timeFormat', 'agenda'))) +
         "</div>" +
         "</div>" +
         "<div class='fc-event-content'>" +

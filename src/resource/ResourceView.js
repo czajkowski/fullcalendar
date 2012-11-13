@@ -716,7 +716,6 @@ function ResourceView(element, calendar, viewName) {
 	
 	
     function slotClick(ev) {
-	
         if (!opt('selectable')) { // if selectable, SelectionManager will worry about dayClick
             var col = Math.min(colCnt-1, Math.floor((ev.pageX - day.table.offset().left - axisWidth) / colWidth));
             var date = resourceDate(col);
@@ -834,8 +833,6 @@ function ResourceView(element, calendar, viewName) {
     }
 	
 	
-	
-	
     function dateCell(date) { // "cell" terminology is now confusing
         return {
             row: Math.floor(dayDiff(date, t.visStart) / 7),
@@ -951,6 +948,7 @@ function ResourceView(element, calendar, viewName) {
 	
 	
     function renderSlotSelection(startDate, endDate, resource) {
+
         var helperOption = opt('selectHelper');
         coordinateGrid.build();
         if (helperOption) {
@@ -1009,6 +1007,7 @@ function ResourceView(element, calendar, viewName) {
             selectionHelper = null;
         }
     }
+    
     
     function daySelectionMousedown(ev) {
         var cellDate = t.cellDate;
