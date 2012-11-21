@@ -22,18 +22,23 @@
 		    
 		    if(resource == 'resource2'){
 			return [
-			    { from : '06:00', to : '07:00' },
-			    { from : '08:00', to : '09:00' },
-			    { from : '10:00', to : '11:00' },
-			    { from : '12:00', to : '13:00' },
-			    { from : '14:00', to : '15:00' }
+			    { from : '06:00', to : '07:00', 'class' : 'availability' },
+			    { from : '08:00', to : '09:00', 'class' : 'availability' },
+			    { from : '10:00', to : '11:00', 'class' : 'availability' },
+			    { from : '12:00', to : '13:00', 'class' : 'availability' },
+			    { from : '14:00', to : '15:00', 'class' : 'availability' },
+			    
+			    { from : '10:00', to : '16:00', 'class' : 'booking' },
+			    { from : '18:00', to : '22:00', 'class' : 'booking' }
+
 			]
 			
 		    }
 		    
 		    return [
-			{ from : '06:00', to : '12:00' },
-			{ from : '13:00', to : '18:00' }
+			{ from : '06:00', to : '12:00', 'class' : 'availability' },
+			{ from : '13:00', to : '18:00', 'class' : 'availability' },
+			{ from : '10:00', to : '14:00', 'class' : 'booking' }
 		    ]
 
 		}
@@ -72,7 +77,7 @@
 			
 		    },
 		    allDaySlot : true,
-		    slotMinutes : 5, 
+		    slotMinutes : 15, 
 		    axisFormat : "HH:mm",
                     titleFormat: 'ddd, MMM dd, yyyy',
                     defaultView: 'resourceDay',
@@ -110,35 +115,35 @@
                         {
                             name: 'Resource 1',
                             id:	'resource1',
-			    availability : function(day){
+			    overlay : function(day){
 				return getResourceAvailability('resource1', day);
 			    }
                         },
                         {
                             name: 'Resource 2',
                             id:	'resource2',
-			    availability : function(day){
+			    overlay : function(day){
 				return getResourceAvailability('resource2', day);
 			    }
                         },
                         {
                             name: 'Resource 3',
                             id:	'resource3',
-			    availability : function(day){
+			    overlay : function(day){
 				return getResourceAvailability('resource3', day);
 			    }
                         },
                         {
                             name: 'Resource 4',
                             id:	'resource4',
-			    availability : function(day){
+			    overlay : function(day){
 				return getResourceAvailability('resource4', day);
 			    }
                         },
                         {
                             name: 'Resource 5',
                             id:	'resource5',
-			    availability : function(day){
+			    overlay : function(day){
 				return getResourceAvailability('resource5', day);
 			    }
                         }			
@@ -214,7 +219,9 @@
 	    .sc-availability-scroll-container {overflow: hidden;}
 	    .fc-outer-day-table .sc-resource-scroll-container {overflow: auto}
 	    .fc-resource-col {min-width: 150px;}
-	    .fc-availability-overlay {background-color: rgba(255, 0, 0, 0.1); position:absolute; pointer-events: none;}
+	    .fc-custom-overlay {position:absolute; pointer-events: none;}
+	    .fc-custom-overlay.availability {background-color: rgba(255, 0, 0, 0.1); }
+	    .fc-custom-overlay.booking {background-color: rgba(0, 255, 0, 0.1); }
 	    
         </style>
     </head>

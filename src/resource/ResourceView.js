@@ -115,8 +115,8 @@ function ResourceView(element, calendar, viewName) {
 	resourceScrollContainer : null,
 	eventContainer : null,
 	
-	availabilityScrollContainer : null,
-	availabilityContainer : null
+	overlayScrollContainer : null,
+	overlayContainer : null
     };
 
     var allDay = {
@@ -129,7 +129,7 @@ function ResourceView(element, calendar, viewName) {
 	resourceScrollContainer : null
     };
 
-    var availabilityOverlays = [];
+    var customOverlays = [];
 
     var axisObjects = null;
     var gutterObjects = null;
@@ -197,7 +197,6 @@ function ResourceView(element, calendar, viewName) {
         maxMinute = parseTime(opt('maxTime'));
         colFormat = opt('columnFormat');
     }
-	
 	
 	
     function buildSkeleton() {
@@ -407,8 +406,8 @@ function ResourceView(element, calendar, viewName) {
         slots.scroller = $("<div style='position:absolute;width:100%;overflow-x:hidden;overflow-y:auto'/>") .appendTo(slots.layer);
         slots.content = $("<div style='position:relative;width:100%;overflow:hidden'/>").appendTo(slots.scroller);
 	
-	slots.availabilityScrollContainer = $("<div style='position:absolute;top:0;left:0' class='sc-availability-scroll-container'/>").appendTo(slots.content);
-	slots.availabilityContainer = $("<div style='position:absolute;z-index:8;top:0;left:0'/>").appendTo(slots.availabilityScrollContainer);		
+	slots.overlayScrollContainer = $("<div style='position:absolute;top:0;left:0' class='sc-overlay-scroll-container'/>").appendTo(slots.content);
+	slots.overlayContainer = $("<div style='position:absolute;z-index:8;top:0;left:0'/>").appendTo(slots.overlayScrollContainer);		
 	
         slots.resourceScrollContainer = $("<div style='position:absolute;top:0;left:0' class='sc-resource-scroll-container'/>").appendTo(slots.content);
         slots.eventContainer = $("<div style='position:absolute;z-index:8;top:0;left:0'/>").appendTo(slots.resourceScrollContainer);
@@ -450,7 +449,7 @@ function ResourceView(element, calendar, viewName) {
 	day.resourceScrollContainer.scroll(function(){
 	    savedScrollLeft = day.resourceScrollContainer.scrollLeft();
 	    slots.eventContainer.css('left', -savedScrollLeft);
-	    slots.availabilityContainer.css('left', -savedScrollLeft);
+	    slots.overlayContainer.css('left', -savedScrollLeft);
 	    allDay.eventContainer.css('left', -savedScrollLeft);
 	});
     }	
@@ -532,7 +531,7 @@ function ResourceView(element, calendar, viewName) {
 	day.resourceScrollContainer.width(prevSCWidth);
 
 	slots.resourceScrollContainer.height(slots.table.height());
-	slots.availabilityScrollContainer.height(slots.table.height());
+	slots.overlayScrollContainer.height(slots.table.height());
 
         if (dateChanged) {
             resetScroll();
@@ -571,8 +570,8 @@ function ResourceView(element, calendar, viewName) {
 	setOuterWidth(day.resourceScrollContainer, resourcesBodyWidth);
 	setOuterWidth(slots.resourceScrollContainer, resourcesBodyWidth);
 	slots.resourceScrollContainer.css('left', axisWidth);
-	setOuterWidth(slots.availabilityScrollContainer, resourcesBodyWidth);
-	slots.availabilityScrollContainer.css('left', axisWidth);
+	setOuterWidth(slots.overlayScrollContainer, resourcesBodyWidth);
+	slots.overlayScrollContainer.css('left', axisWidth);
 
 	if (day.resourceScrollContainer.width() < day.resourceScrollContainer.find('table').width()){
 	    day.footerSections.show();
@@ -607,54 +606,57 @@ function ResourceView(element, calendar, viewName) {
     }
 
     
-    function renderAvailabilityOverlay(){
+    function renderCustomOverlays(){
 
 	var i, j;
 	var top, height, left, width;
 	var overlayNo = 0;
 	var date = clearTime(calendar.getDate());
-	var from, to;
+	var from, to, klass;
 
-	//crear previous availability
-	slots.availabilityContainer.html('');
+	//crear previous overlays
+	slots.overlayContainer.html('');
 
 	for (i=0; i<colCnt; i++) {
 	    
 	    
-	    var availability = resources[i].availability;
+	    var overlay = resources[i].overlay;
 
-	    if ($.isFunction(availability)) {
-		availability = availability(date);
+
+	    if ($.isFunction(overlay)) {
+		overlay = overlay(date);
 	    }
-	    else if ($.isArray(availability)) {
-		availability = availability[i];
+	    else if ($.isArray(overlay)) {
+		overlay = overlay[i];
 	    }	   
 	    
-	    if(availability){
+	    if(overlay){
 			
-		for(j=0; j<availability.length; j++){
+		for(j=0; j<overlay.length; j++){
 		    
 		    from = cloneDate(date);
-		    from = addMinutes(from, parseTime(availability[j].from));
+		    from = addMinutes(from, parseTime(overlay[j].from));
 		    
 		    to = cloneDate(date);
-		    to = addMinutes(to, parseTime(availability[j].to));
+		    to = addMinutes(to, parseTime(overlay[j].to));
 		    
+		    klass = overlay[j]['class'] || '';
 		    
 		    top = timePosition(date, from);
 		    height = timePosition(date, to) - top;
 		    width = getMaxColumnHeaderSize().width;
 		    left = (width + 1) * i, // + border 
 		
-		    availabilityOverlays[overlayNo] = availabilityOverlays[overlayNo] || $("<div class='fc-availability-overlay'/>")
-		    availabilityOverlays[overlayNo].css({
+		    customOverlays[overlayNo] = customOverlays[overlayNo] || $("<div/>")
+		    customOverlays[overlayNo].attr('class', 'fc-custom-overlay ' + klass);
+		    customOverlays[overlayNo].css({
 			height : height, 
 			width: width, 
 			left : left,
 			top : top
 		    });
 
-		    slots.availabilityContainer.append(availabilityOverlays[overlayNo]);
+		    slots.overlayContainer.append(customOverlays[overlayNo]);
 		    
 		    overlayNo++;
 		}
@@ -694,7 +696,7 @@ function ResourceView(element, calendar, viewName) {
 	
     
     function afterRender(){
-	renderAvailabilityOverlay();
+	renderCustomOverlays();
 
     }
     
